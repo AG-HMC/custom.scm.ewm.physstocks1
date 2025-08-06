@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "3.1"
+metadata:
+  name: customer.custom.scm.ewm.physstocks1
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          destination: HMC_DS4100_BA
+          url: http://vhhigds4ci.sap.internal.hmc.heerema.com:44300
+          client: '100'
+        app:
+          name: ZSCM_WH_STOC_EXT
+          description: Manage Physical Stock - Products Ext
+          package: ZSCM
+          transport: DS4K901081
+        exclude:
+          - /test/

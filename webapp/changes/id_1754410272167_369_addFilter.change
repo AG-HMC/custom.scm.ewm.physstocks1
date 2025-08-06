@@ -1,0 +1,31 @@
+{
+  "changeType": "addFilter",
+  "reference": "customer.custom.scm.ewm.physstocks1",
+  "namespace": "apps/customer.custom.scm.ewm.physstocks1/changes/",
+  "creation": "2025-08-05T16:11:15.228Z",
+  "projectId": "customer.custom.scm.ewm.physstocks1",
+  "packageName": "$TMP",
+  "support": {
+    "generator": "@sap-ux/control-property-editor",
+    "sapui5Version": "1.120.23",
+    "compositeCommand": "id_1754410272168_370_composite",
+    "command": "settings"
+  },
+  "originalLanguage": "EN",
+  "layer": "CUSTOMER_BASE",
+  "fileType": "change",
+  "fileName": "id_1754410272167_369_addFilter",
+  "content": {
+    "index": 6,
+    "name": "Batch"
+  },
+  "texts": {},
+  "selector": {
+    "id": "scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts",
+    "idIsLocal": false
+  },
+  "dependentSelector": {},
+  "jsOnly": false,
+  "variantReference": "scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::PageVariantManagement",
+  "isChangeOnStandardVariant": true
+}
