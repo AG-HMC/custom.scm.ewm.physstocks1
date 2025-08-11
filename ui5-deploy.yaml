@@ -18,7 +18,7 @@ builder:
           url: http://vhhigds4ci.sap.internal.hmc.heerema.com:44300
           client: '100'
         app:
-          name: ZSCM_WH_STOC_EXT
+          name: ZSCM_WH_ST_EXT
           description: Manage Physical Stock - Products Ext
           package: ZSCM
           transport: DS4K901081
