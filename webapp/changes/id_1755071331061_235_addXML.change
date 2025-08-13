@@ -1,0 +1,30 @@
+{
+  "changeType": "addXML",
+  "reference": "customer.custom.scm.ewm.physstocks1",
+  "namespace": "apps/customer.custom.scm.ewm.physstocks1/changes/",
+  "creation": "2025-08-13T07:49:02.170Z",
+  "projectId": "customer.custom.scm.ewm.physstocks1",
+  "packageName": "$TMP",
+  "moduleName": "customer/custom/scm/ewm/physstocks1/changes/fragments/Clear.fragment.xml",
+  "support": {
+    "generator": "@sap-ux/control-property-editor",
+    "sapui5Version": "1.120.23",
+    "command": "addXML"
+  },
+  "originalLanguage": "EN",
+  "layer": "CUSTOMER_BASE",
+  "fileType": "change",
+  "fileName": "id_1755071331061_235_addXML",
+  "content": {
+    "targetAggregation": "actions",
+    "index": 1,
+    "fragmentPath": "fragments/Clear.fragment.xml"
+  },
+  "texts": {},
+  "selector": {
+    "id": "scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::table::WarehousePhysicalStockProducts::LineItem",
+    "idIsLocal": false
+  },
+  "dependentSelector": {},
+  "jsOnly": false
+}

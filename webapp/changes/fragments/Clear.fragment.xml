@@ -1,0 +1,6 @@
+<core:FragmentDefinition  xmlns:core='sap.ui.core' xmlns='sap.m'>
+   <actiontoolbar:ActionToolbarAction xmlns:actiontoolbar="sap.ui.mdc.actiontoolbar" id="toolbarAction-e28ea462" >
+        <Button xmlns:m="sap.m" id="btn-e28ea462" visible="false" text="Clear" 
+        press=".extension.customer.custom.scm.ewm.physstocks1.tableControllerExt.onClearPress"/>
+    </actiontoolbar:ActionToolbarAction>
+</core:FragmentDefinition>

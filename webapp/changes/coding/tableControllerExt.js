@@ -4,7 +4,7 @@ sap.ui.define(
         // ,'sap/ui/core/mvc/OverrideExecution'
         , "sap/ndc/BarcodeScanner", "sap/ui/model/Filter", "sap/ui/model/FilterOperator"
     ],
-    function (
+    function(
         ControllerExtension
         // ,OverrideExecution
         , BarcodeScanner, Filter, FilterOperator
@@ -46,44 +46,59 @@ sap.ui.define(
             // couldBePrivate: function() {},
             // // this section allows to extend lifecycle hooks or override public methods of the base controller
             override: {
-            // 	/**
-            // 	 * Called when a controller is instantiated and its View controls (if available) are already created.
-            // 	 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-            // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
-            // 	 */
-            // 	onInit: function() {
-            // 	},
-            // 	/**
-            // 	 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-            // 	 * (NOT before the first rendering! onInit() is used for that one!).
-            // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
-            // 	 */
-            // 	onBeforeRendering: function() {
-            // 	},
-            // 	/**
-            // 	 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-            // 	 * This hook is the same one that SAPUI5 controls get after being rendered.
-            // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
-            // 	 */
-            // 	onAfterRendering: function() {
-            // 	},
-            // 	/**
-            // 	 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-            // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
-            // 	 */
-            // 	onExit: function() {
-            // 	},
-            // 	// override public method of the base controller
-            // 	basePublicMethod: function() {
-            // 	}
-            onBeforeRebindTableExtension: function(oSource){
+                // 	/**
+                // 	 * Called when a controller is instantiated and its View controls (if available) are already created.
+                // 	 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
+                // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
+                // 	 */
+                	onInit: function() {
+                        sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").setShowClearButton(true);
+                        var that = this;
+                        var oButton = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts-btnClear");
+                        if (oButton) {
+                            oButton.attachPress(this.onClearPress, this);
+                        }
+    //                     sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").addDelegate({
+    // onAfterRendering: function (oEvent) {
+      
+    // }.bind(this)
+// });
 
-            }
+//                         const oField = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner");
+//   if (oField) {
+//     oField.attachValueHelpRequest(this.onProductValueHelp.bind(this));
+//   }
+                	},
+                // 	/**
+                // 	 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
+                // 	 * (NOT before the first rendering! onInit() is used for that one!).
+                // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
+                // 	 */
+                // 	onBeforeRendering: function() {
+                // 	},
+                // 	/**
+                // 	 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
+                // 	 * This hook is the same one that SAPUI5 controls get after being rendered.
+                // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
+                // 	 */
+                // 	onAfterRendering: function() {
+                // 	},
+                // 	/**
+                // 	 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
+                // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
+                // 	 */
+                // 	onExit: function() {
+                // 	},
+                // 	// override public method of the base controller
+                // 	basePublicMethod: function() {
+                // 	}
+                onBeforeRebindTableExtension: function(oSource) {
+
+                }
             },
-            onScanPress: function(oEvent){
+            onScanPress: function(oEvent) {
                 var that = this;
-                if(!sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").getFilterConditions().EWMWarehouse)
-                {   
+                if (!sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").getFilterConditions().EWMWarehouse) {
                     sap.m.MessageToast.show("Select warehouse before scanning any item");
                     return;
                 }
@@ -97,10 +112,10 @@ sap.ui.define(
                                     "00": "HU",
                                     "10": "BATCH"
                                 };
-                            
+
                                 // Match longest key prefix first
                                 const sortedKeys = Object.keys(appIdMap).sort((a, b) => b.length - a.length);
-                            
+
                                 for (const key of sortedKeys) {
                                     if (inputText.startsWith(key)) {
                                         return {
@@ -109,14 +124,14 @@ sap.ui.define(
                                         };
                                     }
                                 }
-                            
+
                                 // No identifier found, consider it as SB
                                 return {
                                     field: "SB",
                                     value: inputText
                                 };
                             }
-                            
+
                             // Validation function (allows up to max length, but not exceeding)
                             function isValidFormat(field, value) {
                                 switch (field) {
@@ -131,119 +146,113 @@ sap.ui.define(
                                         return false;
                                 }
                             }
-                            
+
                             // Parse and validate scanned input
                             const parts = oResult.text.split('#');
                             const parsedResults = [];
-                            
+
                             for (const part of parts) {
                                 const parsed = getFieldByAppIdentifier(part);
                                 if (isValidFormat(parsed.field, parsed.value)) {
                                     var filterObj = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").getFilterConditions(),
-                                    oWarehouse = filterObj.EWMWarehouse[0].values[0];
+                                        oWarehouse = filterObj.EWMWarehouse[0].values[0];
                                     switch (parsed.field) {
                                         case "PROD":
                                             var value = {
                                                 operator: "EQ",
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                              };
-                                              if(!filterObj.Product)
+                                            };
+                                            if (!filterObj.Product)
                                                 filterObj.Product = [];
                                             filterObj.Product.push(value);
                                             var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner"),
-                                            oToken = new sap.m.Token({
-                                                key: parsed.value, 
-                                                text: parsed.value 
-                                            });
+                                                oToken = new sap.m.Token({
+                                                    key: parsed.value,
+                                                    text: parsed.value
+                                                });
                                             field.addToken(oToken);
-                                            
-                                        break;
+
+                                            break;
                                         case "HU":
                                             value = {
                                                 operator: "EQ",
                                                 payload: {
-                                                  "": [
-                                                    {
+                                                    "": [{
                                                         EWWarehouse: oWarehouse,
                                                         HandlingUnitNumber: parsed.value,
                                                         HandlingUnitIndicator: ""
-                                                    }
-                                                  ]
+                                                    }]
                                                 },
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                              };
-                                              if(!filterObj.HandlingUnitNumber)
+                                            };
+                                            if (!filterObj.HandlingUnitNumber)
                                                 filterObj.HandlingUnitNumber = [];
                                             filterObj.HandlingUnitNumber.push(value);
                                             var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::HandlingUnitNumber-inner"),
-                                            oToken = new sap.m.Token({
-                                                key: parsed.value, 
-                                                text: parsed.value 
-                                            });
+                                                oToken = new sap.m.Token({
+                                                    key: parsed.value,
+                                                    text: parsed.value
+                                                });
                                             field.addToken(oToken);
                                             break;
                                         case "BATCH":
                                             value = {
                                                 operator: "EQ",
                                                 payload: {
-                                                  "": [
-                                                    {
+                                                    "": [{
                                                         EWWarehouse: oWarehouse,
                                                         Batch: parsed.value,
                                                         EntitledToDisposeParty: "",
                                                         Product: ""
-                                                    }
-                                                  ]
+                                                    }]
                                                 },
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                              };
-                                              if(!filterObj.Batch)
+                                            };
+                                            if (!filterObj.Batch)
                                                 filterObj.Batch = [];
                                             filterObj.Batch.push(value);
 
                                             field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch-inner"),
-                                            oToken = new sap.m.Token({
-                                                key: parsed.value, 
-                                                text: parsed.value 
-                                            });
-                                            if(field){
-                                            field.addToken(oToken);
+                                                oToken = new sap.m.Token({
+                                                    key: parsed.value,
+                                                    text: parsed.value
+                                                });
+                                            if (field) {
+                                                field.addToken(oToken);
 
-                                            sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch").setVisible(true);
+                                                sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch").setVisible(true);
                                             }
                                             break;
                                         case "SB":
                                             value = {
                                                 operator: "EQ",
                                                 payload: {
-                                                  "": [
-                                                    {
+                                                    "": [{
                                                         EWWarehouse: oWarehouse,
-                                                      EWMStorageBin: parsed.value,
-                                                      EWMStorageType: ""
-                                                    }
-                                                  ]
+                                                        EWMStorageBin: parsed.value,
+                                                        EWMStorageType: ""
+                                                    }]
                                                 },
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                              };
-                                              if(!filterObj.EWMStorageBin)
+                                            };
+                                            if (!filterObj.EWMStorageBin)
                                                 filterObj.EWMStorageBin = [];
                                             filterObj.EWMStorageBin.push(value);
                                             field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMStorageBin-inner"),
-                                            oToken = new sap.m.Token({
-                                                key: parsed.value, 
-                                                text: parsed.value 
-                                            });
+                                                oToken = new sap.m.Token({
+                                                    key: parsed.value,
+                                                    text: parsed.value
+                                                });
                                             field.addToken(oToken);
                                             break;
                                         default:
                                             return false;
                                     }
-                                    sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts-btnSearch").firePress();  
+                                    sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts-btnSearch").firePress();
                                 } else {
                                     console.warn(`Invalid format for ${parsed.field}: ${parsed.value}`);
                                 }
@@ -256,8 +265,47 @@ sap.ui.define(
                     }
                 );
             },
+            onClearPress: function() {
+                var filterObj = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").getFilterConditions();
+                if (filterObj.Product)
+                    filterObj.Product = [];
+                var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner");
 
-            
+                field.destroyTokens();
+
+
+                if (filterObj.HandlingUnitNumber)
+                    filterObj.HandlingUnitNumber = [];
+
+                var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::HandlingUnitNumber-inner");
+
+                field.destroyTokens();
+
+                if (filterObj.Batch)
+                    filterObj.Batch = [];
+
+                field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch-inner");
+                if (field) {
+                    field.destroyTokens();
+                    sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch").setVisible(true);
+                }
+                if (filterObj.EWMStorageBin)
+                    filterObj.EWMStorageBin = [];
+                field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMStorageBin-inner");
+                field.destroyTokens();
+            },
+
+            onProductValueHelp: function(oEvent){
+// oEvent.getSource()._oSuggPopover.attachEventOnce(function(oEvent) {
+ 
+// })
+oEvent.getSource()._oSuggestionsTable.addEventDelegate({
+    onAfterRendering: function (oEvent){
+        
+    }
+})
+            }
+
         });
     }
 );
