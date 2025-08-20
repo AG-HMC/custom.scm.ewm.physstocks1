@@ -51,24 +51,24 @@ sap.ui.define(
                 // 	 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
                 // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
                 // 	 */
-                	onInit: function() {
-                        sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").setShowClearButton(true);
-                        var that = this;
-                        var oButton = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts-btnClear");
-                        if (oButton) {
-                            oButton.attachPress(this.onClearPress, this);
-                        }
-    //                     sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").addDelegate({
-    // onAfterRendering: function (oEvent) {
-      
-    // }.bind(this)
-// });
+                onInit: function() {
+                    sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").setShowClearButton(true);
+                    var that = this;
+                    var oButton = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts-btnClear");
+                    if (oButton) {
+                        oButton.attachPress(this.onClearPress, this);
+                    }
+                    //                     sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts").addDelegate({
+                    // onAfterRendering: function (oEvent) {
 
-//                         const oField = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner");
-//   if (oField) {
-//     oField.attachValueHelpRequest(this.onProductValueHelp.bind(this));
-//   }
-                	},
+                    // }.bind(this)
+                    // });
+
+                    //                         const oField = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner");
+                    //   if (oField) {
+                    //     oField.attachValueHelpRequest(this.onProductValueHelp.bind(this));
+                    //   }
+                },
                 // 	/**
                 // 	 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
                 // 	 * (NOT before the first rendering! onInit() is used for that one!).
@@ -158,25 +158,92 @@ sap.ui.define(
                                         oWarehouse = filterObj.EWMWarehouse[0].values[0];
                                     switch (parsed.field) {
                                         case "PROD":
-                                            var value = {
-                                                operator: "EQ",
-                                                validated: "validated",
-                                                values: [parsed.value]
-                                            };
-                                            if (!filterObj.Product)
-                                                filterObj.Product = [];
-                                            filterObj.Product.push(value);
-                                            var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner"),
-                                                oToken = new sap.m.Token({
-                                                    key: parsed.value,
-                                                    text: parsed.value
+                                            // var value = {
+                                            //     operator: "EQ",
+                                            //     validated: "validated",
+                                            //     values: [parsed.value]
+                                            // };
+                                            // if (!filterObj.Product)
+                                            //     filterObj.Product = [];
+                                            // filterObj.Product.push(value);
+                                            // var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner"),
+                                            //     oToken = new sap.m.Token({
+                                            //         key: parsed.value,
+                                            //         text: parsed.value
+                                            //     });
+                                            // field.addToken(oToken);
+                                            var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Product-inner");
+                                            // 1. Prepare the model data structure
+                                            var aConditions = field.getModel("$field")?.getProperty("/conditions") || [];
+
+                                            aConditions.push({
+                                                operator: "EQ", // example values — adjust based on your use case
+                                                values: [parsed.value], // or parsed.key, etc.
+                                                isEmpty: false,
+                                                validated: "validated"
+                                            });
+
+                                            // 2. Set the updated data back to the model
+                                            var oModel = field.getModel("$field");
+
+                                            if (!oModel) {
+                                                // Create model if it doesn't exist
+                                                oModel = new sap.ui.model.json.JSONModel({
+                                                    conditions: aConditions
                                                 });
+                                                field.setModel(oModel, "$field");
+                                            } else {
+                                                oModel.setProperty("/conditions", aConditions);
+                                            }
+
+                                            // 3. Get the context of the new condition (last pushed item)
+                                            var iNewIndex = aConditions.length - 1;
+                                            var oContext = oModel.getContext("/conditions/" + iNewIndex);
+
+                                            // 4. Create the token
+                                            var oToken = new sap.m.Token({
+                                                text: parsed.value, // or use binding if needed: text: "{field>values/0}"
+                                                editableParent: true,
+                                                posinset: 1,
+                                                setsize: 1
+                                            });
+
+                                            // 5. Attach context and model
+                                            oToken.setBindingContext(oContext, "$field");
+                                            oToken.setModel(oModel, "$field");
+
+                                            // 6. Add token to the field
                                             field.addToken(oToken);
 
                                             break;
                                         case "HU":
-                                            value = {
-                                                operator: "EQ",
+                                            // var value = {
+                                            //     operator: "EQ",
+                                            //     payload: {
+                                            //         "": [{
+                                            //             EWWarehouse: oWarehouse,
+                                            //             HandlingUnitNumber: parsed.value,
+                                            //             HandlingUnitIndicator: ""
+                                            //         }]
+                                            //     },
+                                            //     validated: "validated",
+                                            //     values: [parsed.value]
+                                            // };
+                                            // if (!filterObj.HandlingUnitNumber)
+                                            //     filterObj.HandlingUnitNumber = [];
+                                            // filterObj.HandlingUnitNumber.push(value);
+                                            // var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::HandlingUnitNumber-inner"),
+                                            //     oToken = new sap.m.Token({
+                                            //         key: parsed.value,
+                                            //         text: parsed.value
+                                            //     });
+                                            // field.addToken(oToken);
+                                            var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::HandlingUnitNumber-inner");
+                                            // 1. Prepare the model data structure
+                                            var aConditions = field.getModel("$field")?.getProperty("/conditions") || [];
+
+                                            aConditions.push({
+                                                  operator: "EQ",
                                                 payload: {
                                                     "": [{
                                                         EWWarehouse: oWarehouse,
@@ -186,20 +253,74 @@ sap.ui.define(
                                                 },
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                            };
-                                            if (!filterObj.HandlingUnitNumber)
-                                                filterObj.HandlingUnitNumber = [];
-                                            filterObj.HandlingUnitNumber.push(value);
-                                            var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::HandlingUnitNumber-inner"),
-                                                oToken = new sap.m.Token({
-                                                    key: parsed.value,
-                                                    text: parsed.value
+                                            });
+
+                                            // 2. Set the updated data back to the model
+                                            var oModel = field.getModel("$field");
+
+                                            if (!oModel) {
+                                                // Create model if it doesn't exist
+                                                oModel = new sap.ui.model.json.JSONModel({
+                                                    conditions: aConditions
                                                 });
+                                                field.setModel(oModel, "$field");
+                                            } else {
+                                                oModel.setProperty("/conditions", aConditions);
+                                            }
+
+                                            // 3. Get the context of the new condition (last pushed item)
+                                            var iNewIndex = aConditions.length - 1;
+                                            var oContext = oModel.getContext("/conditions/" + iNewIndex);
+
+                                            // 4. Create the token
+                                            var oToken = new sap.m.Token({
+                                                text: parsed.value, // or use binding if needed: text: "{field>values/0}"
+                                                editableParent: true,
+                                                posinset: 1,
+                                                setsize: 1
+                                            });
+
+                                            // 5. Attach context and model
+                                            oToken.setBindingContext(oContext, "$field");
+                                            oToken.setModel(oModel, "$field");
+
+                                            // 6. Add token to the field
                                             field.addToken(oToken);
                                             break;
                                         case "BATCH":
-                                            value = {
-                                                operator: "EQ",
+                                            // value = {
+                                            //     operator: "EQ",
+                                            //     payload: {
+                                            //         "": [{
+                                            //             EWWarehouse: oWarehouse,
+                                            //             Batch: parsed.value,
+                                            //             EntitledToDisposeParty: "",
+                                            //             Product: ""
+                                            //         }]
+                                            //     },
+                                            //     validated: "validated",
+                                            //     values: [parsed.value]
+                                            // };
+                                            // if (!filterObj.Batch)
+                                            //     filterObj.Batch = [];
+                                            // filterObj.Batch.push(value);
+
+                                            // field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch-inner"),
+                                            //     oToken = new sap.m.Token({
+                                            //         key: parsed.value,
+                                            //         text: parsed.value
+                                            //     });
+                                            // if (field) {
+                                            //     field.addToken(oToken);
+
+                                            //     sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch").setVisible(true);
+                                            // }
+                                            field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch-inner");
+                                            // 1. Prepare the model data structure
+                                            var aConditions = field.getModel("$field")?.getProperty("/conditions") || [];
+
+                                            aConditions.push({
+                                                    operator: "EQ",
                                                 payload: {
                                                     "": [{
                                                         EWWarehouse: oWarehouse,
@@ -210,25 +331,68 @@ sap.ui.define(
                                                 },
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                            };
-                                            if (!filterObj.Batch)
-                                                filterObj.Batch = [];
-                                            filterObj.Batch.push(value);
+                                            });
 
-                                            field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch-inner"),
-                                                oToken = new sap.m.Token({
-                                                    key: parsed.value,
-                                                    text: parsed.value
+                                            // 2. Set the updated data back to the model
+                                            var oModel = field.getModel("$field");
+
+                                            if (!oModel) {
+                                                // Create model if it doesn't exist
+                                                oModel = new sap.ui.model.json.JSONModel({
+                                                    conditions: aConditions
                                                 });
-                                            if (field) {
-                                                field.addToken(oToken);
-
-                                                sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::Batch").setVisible(true);
+                                                field.setModel(oModel, "$field");
+                                            } else {
+                                                oModel.setProperty("/conditions", aConditions);
                                             }
+
+                                            // 3. Get the context of the new condition (last pushed item)
+                                            var iNewIndex = aConditions.length - 1;
+                                            var oContext = oModel.getContext("/conditions/" + iNewIndex);
+
+                                            // 4. Create the token
+                                            var oToken = new sap.m.Token({
+                                                text: parsed.value, // or use binding if needed: text: "{field>values/0}"
+                                                editableParent: true,
+                                                posinset: 1,
+                                                setsize: 1
+                                            });
+
+                                            // 5. Attach context and model
+                                            oToken.setBindingContext(oContext, "$field");
+                                            oToken.setModel(oModel, "$field");
+
+                                            // 6. Add token to the field
+                                            field.addToken(oToken);
                                             break;
                                         case "SB":
-                                            value = {
-                                                operator: "EQ",
+                                            // value = {
+                                            //     operator: "EQ",
+                                            //     payload: {
+                                            //         "": [{
+                                            //             EWWarehouse: oWarehouse,
+                                            //             EWMStorageBin: parsed.value,
+                                            //             EWMStorageType: ""
+                                            //         }]
+                                            //     },
+                                            //     validated: "validated",
+                                            //     values: [parsed.value]
+                                            // };
+                                            // if (!filterObj.EWMStorageBin)
+                                            //     filterObj.EWMStorageBin = [];
+                                            // filterObj.EWMStorageBin.push(value);
+                                            // field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMStorageBin-inner"),
+                                            //     oToken = new sap.m.Token({
+                                            //         key: parsed.value,
+                                            //         text: parsed.value
+                                            //     });
+                                            // field.addToken(oToken);
+                                            field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMStorageBin-inner");
+                                            // 1. Prepare the model data structure
+                                            var aConditions = field.getModel("$field")?.getProperty("/conditions") || [];
+
+                                            aConditions.push({
+                                                     operator: "EQ",
                                                 payload: {
                                                     "": [{
                                                         EWWarehouse: oWarehouse,
@@ -238,15 +402,38 @@ sap.ui.define(
                                                 },
                                                 validated: "validated",
                                                 values: [parsed.value]
-                                            };
-                                            if (!filterObj.EWMStorageBin)
-                                                filterObj.EWMStorageBin = [];
-                                            filterObj.EWMStorageBin.push(value);
-                                            field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMStorageBin-inner"),
-                                                oToken = new sap.m.Token({
-                                                    key: parsed.value,
-                                                    text: parsed.value
+                                            });
+
+                                            // 2. Set the updated data back to the model
+                                            var oModel = field.getModel("$field");
+
+                                            if (!oModel) {
+                                                // Create model if it doesn't exist
+                                                oModel = new sap.ui.model.json.JSONModel({
+                                                    conditions: aConditions
                                                 });
+                                                field.setModel(oModel, "$field");
+                                            } else {
+                                                oModel.setProperty("/conditions", aConditions);
+                                            }
+
+                                            // 3. Get the context of the new condition (last pushed item)
+                                            var iNewIndex = aConditions.length - 1;
+                                            var oContext = oModel.getContext("/conditions/" + iNewIndex);
+
+                                            // 4. Create the token
+                                            var oToken = new sap.m.Token({
+                                                text: parsed.value, // or use binding if needed: text: "{field>values/0}"
+                                                editableParent: true,
+                                                posinset: 1,
+                                                setsize: 1
+                                            });
+
+                                            // 5. Attach context and model
+                                            oToken.setBindingContext(oContext, "$field");
+                                            oToken.setModel(oModel, "$field");
+
+                                            // 6. Add token to the field
                                             field.addToken(oToken);
                                             break;
                                         default:
@@ -295,15 +482,15 @@ sap.ui.define(
                 field.destroyTokens();
             },
 
-            onProductValueHelp: function(oEvent){
-// oEvent.getSource()._oSuggPopover.attachEventOnce(function(oEvent) {
- 
-// })
-oEvent.getSource()._oSuggestionsTable.addEventDelegate({
-    onAfterRendering: function (oEvent){
-        
-    }
-})
+            onProductValueHelp: function(oEvent) {
+                // oEvent.getSource()._oSuggPopover.attachEventOnce(function(oEvent) {
+
+                // })
+                oEvent.getSource()._oSuggestionsTable.addEventDelegate({
+                    onAfterRendering: function(oEvent) {
+
+                    }
+                })
             }
 
         });
