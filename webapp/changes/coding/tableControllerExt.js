@@ -81,8 +81,31 @@ sap.ui.define(
                 // 	 * This hook is the same one that SAPUI5 controls get after being rendered.
                 // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
                 // 	 */
-                // 	onAfterRendering: function() {
-                // 	},
+                	onAfterRendering: function() {
+                        
+var retryCount = 0;
+var maxRetries = 10;
+var intervalId;
+function checkAndCall() {
+    var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMWarehouse-inner");
+    if (field) {
+        // The field has a value, so call the function and stop the interval
+        this._fetchDefaultWH.bind(this)();
+        clearInterval(intervalId);
+    } else {
+        // The field does not have a value, so increment retry count
+        retryCount++;
+        if (retryCount >= maxRetries) {
+            // Maximum retries reached, stop the interval
+            console.warn("Max retries reached. The field still has no value.");
+            clearInterval(intervalId);
+        }
+    }
+}
+
+// Start the interval
+intervalId = setInterval(checkAndCall.bind(this), 500);
+                	},
                 // 	/**
                 // 	 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
                 // 	 * @memberOf customer.custom.scm.ewm.physstocks1.tableControllerExt
@@ -246,7 +269,7 @@ sap.ui.define(
                                                   operator: "EQ",
                                                 payload: {
                                                     "": [{
-                                                        EWWarehouse: oWarehouse,
+                                                        EWMWarehouse: oWarehouse,
                                                         HandlingUnitNumber: parsed.value,
                                                         HandlingUnitIndicator: ""
                                                     }]
@@ -480,6 +503,7 @@ sap.ui.define(
                     filterObj.EWMStorageBin = [];
                 field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMStorageBin-inner");
                 field.destroyTokens();
+                setTimeout(this._fetchDefaultWH.bind(this)(), 2000);
             },
 
             onProductValueHelp: function(oEvent) {
@@ -491,6 +515,43 @@ sap.ui.define(
 
                     }
                 })
+            },
+
+            _fetchDefaultWH: function() {
+                var sUrl = "/sap/opu/odata/UI2/INTEROP/";
+                var sPath = "PersContainers(category='P',id='sap.ushell.UserDefaultParameter')?$expand=PersContainerItems";
+                $.ajax({
+                    url: sUrl + sPath,
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    success: function(response) {
+                        var data = response.d;
+                        
+                        if (data && data.PersContainerItems && data.PersContainerItems.results.length > 0) {
+                            var warehouseItem = data.PersContainerItems.results.find(function(item) {
+                                return item.id === "Warehouse";
+                            });
+
+                            if (warehouseItem) {
+
+                                var sFilterString = JSON.stringify({
+                                    EWMWarehouse: JSON.parse(warehouseItem.value).value
+                                });
+                                var field = sap.ui.getCore().byId("scm.ewm.physstocks1::WarehousePhysicalStockProductsList--fe::FilterBar::WarehousePhysicalStockProducts::FilterField::EWMWarehouse-inner");
+                                field.setValue();
+                                field.setValue(JSON.parse(warehouseItem.value).value);
+                            }
+
+                            
+
+                        }
+                    }.bind(this),
+                    error: function(err) {
+                        console.error("Failed to fetch user default parameters", err);
+                    }
+                });
             }
 
         });
